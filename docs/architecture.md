@@ -13,6 +13,17 @@
 
 ---
 
+## Project Structure
+Root
+- `app/`: Next.js App Router pages, layouts, and route-local components.
+- `components/`: common UI, form, email, navigation, and icon components.
+- `trpc/`: tRPC client and server configuration.
+- `db/`: Database configuration and schema definitions.
+- `lib/`: Shared utilities and configurations (auth, permissions, utils).
+- `server/`: Server-only helper functions and utilities.
+- `docs/`: Project documentation and planning notes.
+---
+
 ## Architecture Layers
 
 UI Layer
