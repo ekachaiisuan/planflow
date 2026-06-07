@@ -7,7 +7,7 @@ import {
 
 const statements = {
   ...defaultStatements,
-  project: ["create", "read", "update", "delete"],
+  project: ["create", "read", "update", "delete","manage"],
 } as const;
 
 export const ac = createAccessControl(statements)
@@ -24,12 +24,12 @@ export const officer = ac.newRole({
 
 export const manager = ac.newRole({
   ...userAc.statements,
-  project: ["create", "read", "update", "delete"],
+  project: ["create", "read", "update", "delete", "manage"],
 })
 
 export const admin = ac.newRole({
   ...adminAc.statements,
-  project: ["create", "read", "update", "delete"],
+  project: ["create", "read", "update", "delete", "manage"],
 })
 
 export const ROLES = ["user", "officer", "manager", "admin"] as const
