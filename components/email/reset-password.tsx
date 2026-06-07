@@ -66,7 +66,7 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
                         {/* Alternative Link */}
                         <Section className="mb-[32px]">
                             <Text className="text-[14px] text-gray-600 leading-[20px] m-0 mb-[16px]">
-                                If the button above doesn't work, copy and paste the following link into your browser:
+                                If the button above doesn&apos;t work, copy and paste the following link into your browser:
                             </Text>
                             <Text className="text-[14px] text-blue-600 break-all m-0">
                                 <Link href={url} className="text-blue-600 underline">
@@ -81,7 +81,7 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
                                 <strong>Security Notice:</strong>
                             </Text>
                             <Text className="text-[14px] text-gray-700 leading-[20px] m-0">
-                                If you didn't request a password reset, please ignore this email or contact our support team if you have concerns about your account security.
+                                If you didn&apos;t request a password reset, please ignore this email or contact our support team if you have concerns about your account security.
                             </Text>
                         </Section>
 

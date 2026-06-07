@@ -1,19 +1,16 @@
 'use client'
 
 import { BetterAuthActionButton } from "./better-auth-action"
-import { authClient } from "@/lib/auth-client"
+import { sendVerificationEmailAction } from "@/server/auth-actions"
+import * as React from "react"
 import { useEffect, useRef, useState } from "react"
 
 export function VerifyEmail({ email }: { email: string }) {
     const [timeLeft, setTimeLeft] = useState(300) //5 minutes
     const interval = useRef<NodeJS.Timeout>(undefined)
 
-    useEffect(() => {
-        startTimer()
-    }, [])
-
-    function startTimer(time = 300) {
-        setTimeLeft(time)
+    const startTimer = React.useCallback((time = 300) => {
+        setTimeout(() => setTimeLeft(time), 0)
         interval.current = setInterval(() => {
             setTimeLeft(t => {
                 const newTime = t - 1
@@ -24,7 +21,14 @@ export function VerifyEmail({ email }: { email: string }) {
                 return newTime
             })
         }, 1000)
-    }
+    }, [])
+
+    useEffect(() => {
+        startTimer()
+        return () => {
+            if (interval.current) clearInterval(interval.current)
+        }
+    }, [startTimer])
 
     return (
         <div className="flex flex-col items-center gap-2 text-center">
@@ -39,7 +43,7 @@ export function VerifyEmail({ email }: { email: string }) {
                 disabled={timeLeft > 0}
                 action={() => {
                     startTimer()
-                    return authClient.sendVerificationEmail({
+                    return sendVerificationEmailAction({
                         email,
                         callbackURL: "/"
                     })

@@ -25,7 +25,7 @@ import * as z from 'zod';
 import { useRouter, useSearchParams } from "next/navigation"
 import { Spinner } from "../ui/spinner"
 import { PasswordInput } from "../ui/password-input"
-import { authClient } from "@/lib/auth-client"
+import { resetPasswordAction } from "@/server/auth-actions"
 
 const resetPasswordSchema = z.object({
     password: z.string().min(6, 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'),
@@ -66,14 +66,13 @@ export function ResetPasswordForm({
             return;
         }
 
-        const { data, error } = await authClient.resetPassword({
-            newPassword: value.password,
+        const { data, error } = await resetPasswordAction({
+            password: value.password,
             token: token!,
         });
         if (error) {
             toast.error(error.message);
-        }
-        if (data) {
+        } else {
             toast.success("Password reset successfully");
             router.push("/login");
         }

@@ -20,7 +20,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { PasswordInput } from '../ui/password-input';
-import { authClient } from '@/lib/auth-client';
+import { signUpAction } from '@/server/auth-actions';
 import { useRouter } from 'next/navigation';
 import { VerifyEmail } from '@/components/verify-email';
 
@@ -60,21 +60,13 @@ export function SignupForm({
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    await authClient.signUp.email(
-      { ...data },
-      {
-        onSuccess: () => {
-          toast.success('Sign up successful');
-          setIsEmail(data.email);
-        },
-        onError: (error) => {
-          toast.error(error.error.message || 'Failed to sign up');
-        },
-        onFinally: () => {
-          setIsLoading(false);
-        },
-      },
-    );
+    const res = await signUpAction(data);
+    if (res.error) {
+      toast.error(res.error.message || 'Failed to sign up');
+    } else {
+      toast.success('Sign up successful');
+      setIsEmail(data.email);
+    }
     setIsLoading(false);
   }
 

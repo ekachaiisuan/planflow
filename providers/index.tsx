@@ -11,7 +11,8 @@ export const Provider = ({ children }: ProviderProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    const handle = requestAnimationFrame(() => setIsMounted(true));
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   if (!isMounted) return null;

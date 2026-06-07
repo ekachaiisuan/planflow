@@ -3,15 +3,15 @@
 import * as React from 'react';
 import {
   AudioWaveform,
-  BookOpen,
   Bot,
   Command,
-  Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
+  ListTodo,
+  LayoutDashboard,
+  type LucideIcon,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -25,11 +25,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Spinner } from './ui/spinner';
+import { Role } from '@/lib/permissions';
 
-// This is sample data.
 const data = {
   teams: [
     {
@@ -55,49 +54,91 @@ const data = {
       icon: Bot,
     },
   ],
-  projects: [
+};
+
+const projectsData: Record<Role, { name: string; url: string; icon: LucideIcon }[]> = {
+  admin: [
     {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
+      name: 'Dashboard',
+      url: '/dashboard',
+      icon: LayoutDashboard,
     },
     {
-      name: 'Sales & Marketing',
-      url: '#',
+      name: 'All Projects',
+      url: '/admin/projects',
+      icon: Map,
+    },
+    {
+      name: 'Global Reports',
+      url: '/admin/reports',
       icon: PieChart,
     },
     {
-      name: 'Travel',
-      url: '#',
+      name: 'System Settings',
+      url: '/admin/settings',
+      icon: Settings2,
+    },
+  ],
+  manager: [
+    {
+      name: 'Dashboard',
+      url: '/dashboard',
+      icon: LayoutDashboard,
+    },
+    {
+      name: 'Manage Projects',
+      url: '/projects/manage',
       icon: Map,
+    },
+    {
+      name: 'Department Reports',
+      url: '/reports',
+      icon: PieChart,
+    },
+  ],
+  officer: [
+    {
+      name: 'Dashboard',
+      url: '/dashboard',
+      icon: LayoutDashboard,
+    },
+    {
+      name: 'Project Tasks',
+      url: '/tasks',
+      icon: ListTodo,
+    },
+  ],
+  user: [
+    {
+      name: 'Dashboard',
+      url: '/dashboard',
+      icon: LayoutDashboard,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [hasAdminPermission, setHasAdminPermission] = useState(false);
   const { data: session, isPending: loading } = authClient.useSession();
 
-  useEffect(() => {
-    if (!session) return;
-    authClient.admin
-      .hasPermission({
-        permission: { user: ['list'] },
-      })
-      .then(({ data }) => {
-        setHasAdminPermission(data?.success ?? false);
-      });
-  }, [session]);
-
- if (loading) {
-    return <div><Spinner className="size-4" /></div>;
+  if (loading) {
+    return (
+      <Sidebar {...props}>
+        <div className="flex h-full items-center justify-center p-4">
+          <Spinner className="size-6" />
+        </div>
+      </Sidebar>
+    );
   }
 
-    const user = {
-    name: session?.user?.name ?? "",
-    email: session?.user?.email ?? "",
-    avatar: session?.user?.image ?? "/avatars/default.jpg",
+  const user = {
+    name: session?.user?.name ?? '',
+    email: session?.user?.email ?? '',
+    avatar: session?.user?.image ?? '/avatars/default.jpg',
   };
+
+  const userRole = (session?.user?.role as Role) || 'user';
+  const isAdmin = userRole === 'admin';
+  const userProjects = projectsData[userRole] || projectsData.user;
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -105,8 +146,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        {hasAdminPermission && <NavMain items={data.navMain} />}
-        <NavProjects projects={data.projects} />
+        {isAdmin && <NavMain items={data.navMain} />}
+        <NavProjects projects={userProjects} label="Projects" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

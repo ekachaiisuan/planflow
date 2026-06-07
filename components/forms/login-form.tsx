@@ -20,7 +20,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { PasswordInput } from '../ui/password-input';
-import { authClient } from '@/lib/auth-client';
+import { signInAction } from '@/server/auth-actions';
 import { useRouter } from 'next/navigation';
 import { SocialAuthButtons } from '../social-auth-button';
 
@@ -48,24 +48,13 @@ export function LoginForm({
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    await authClient.signIn.email(
-      { ...data },
-      {
-        onSuccess: () => {
-          toast.success('Sign in successful');
-          router.push('/dashboard');
-        },
-        onError: (ctx) => {
-          if (ctx.error.status === 403) {
-            toast.error('Please verify your email address');
-          }
-          toast.error(ctx.error?.message || 'Failed to sign in');
-        },
-        onFinally: () => {
-          setIsLoading(false);
-        },
-      },
-    );
+    const res = await signInAction(data);
+    if (res.error) {
+      toast.error(res.error.message || 'Failed to sign in');
+    } else {
+      toast.success('Sign in successful');
+      router.push('/dashboard');
+    }
     setIsLoading(false);
   }
 

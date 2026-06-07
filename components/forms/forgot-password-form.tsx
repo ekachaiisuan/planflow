@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { useRouter } from "next/navigation"
 import { Spinner } from "../ui/spinner"
-import { authClient } from "@/lib/auth-client"
+import { requestPasswordResetAction } from "@/server/auth-actions"
 
 const forgotPasswordSchema = z.object({
     email: z.email('invalid email'),
@@ -49,14 +49,13 @@ export function ForgotPasswordForm({
 
     async function onSubmit(value: z.infer<typeof forgotPasswordSchema>) {
         setIsLoading(true);
-        const { data, error } = await authClient.requestPasswordReset({
+        const { data, error } = await requestPasswordResetAction({
             email: value.email,
             redirectTo: "/reset-password",
         });
         if (error) {
             toast.error(error.message);
-        }
-        if (data) {
+        } else {
             toast.success("Reset password link sent successfully");
             setIsMailSent(value.email);
         }
@@ -69,7 +68,7 @@ export function ForgotPasswordForm({
                 <div className="flex flex-col items-center gap-2 text-center">
                     <h1 className="text-2xl font-bold">Check your email</h1>
                     <p className="text-muted-foreground text-sm text-balance">
-                        We've sent a reset password link to your email {isMailSent}
+                        We&apos;ve sent a reset password link to your email {isMailSent}
                     </p>
                 </div>
             ) : (

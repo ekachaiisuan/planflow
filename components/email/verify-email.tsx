@@ -44,14 +44,14 @@ const VerifyEmail = (props: VerifyEmailProps) => {
               </Section>
 
               <Text className="text-[14px] text-gray-600 mb-[24px] mt-0 leading-[20px]">
-                If the button doesn't work, you can copy and paste this link
+                If the button doesn&apos;t work, you can copy and paste this link
                 into your browser:
                 <br />
                 {verifyUrl}
               </Text>
 
               <Text className="text-[14px] text-gray-600 mb-[32px] mt-0 leading-[20px]">
-                This verification link will expire in 5 minutes. If you didn't
+                This verification link will expire in 5 minutes. If you didn&apos;t
                 create an account, you can safely ignore this email.
               </Text>
             </Section>
