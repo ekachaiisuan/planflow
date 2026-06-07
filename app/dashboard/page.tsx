@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from '@/components/app-sidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,20 +6,29 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from '@/components/ui/breadcrumb';
+import { Separator } from '@/components/ui/separator';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { authIsRequired } from "@/server/user"
-import PageCount from "./_components/page-count"
-
+} from '@/components/ui/sidebar';
+import { authIsRequired } from '@/server/user';
+import { getQueryClient, trpc } from '@/trpc/server';
+import PageContent from './_components/page-content';
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 export default async function Page() {
-  const session = await authIsRequired()
-  
+  const session = await authIsRequired();
+
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(
+    trpc.count.getCount.queryOptions({
+      countId: '8d0fb1b1-0e4b-47ab-b841-52951f7b5c8f',
+    }),
+  );
 
   return (
     <SidebarProvider>
@@ -47,17 +56,14 @@ export default async function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl">
-              <PageCount />
-            </div>
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-          </div>
-          <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min" />
-        </div>
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <ErrorBoundary fallback={<div>There was an error</div>}>
+            <Suspense fallback={<div>Loading...</div>}>
+              <PageContent />
+            </Suspense>
+          </ErrorBoundary>
+        </HydrationBoundary>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

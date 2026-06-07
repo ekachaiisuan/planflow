@@ -47,16 +47,15 @@ export const countRouter = createTRPCRouter({
       const existingCount = await ctx.db.query.count.findFirst({
         where: eq(count.id, input.countId),
       });
-      // if no count exists, then throw an error
-      if (!existingCount)
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'No count found with this id',
-        });
+
       // if a count with that id exists, return it
-      return existingCount;
+      return (
+        existingCount ?? { count: undefined, id: undefined, userId: undefined }
+      );
     }),
-    updateCount: protectedProcedure.input(z.object({ isIncreasing: z.boolean()})).mutation(async ({ ctx, input }) => {
+  updateCount: protectedProcedure
+    .input(z.object({ isIncreasing: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
       // check if a count exists for the current user
       const existingCount = await ctx.db.query.count.findFirst({
         where: eq(count.userId, ctx.user.id),
@@ -68,6 +67,13 @@ export const countRouter = createTRPCRouter({
           message: 'No count found for this user',
         });
       // if it does exist, update it
-      await ctx.db.update(count).set({ count: input.isIncreasing ? existingCount.count + 1 : existingCount.count - 1 }).where(eq(count.userId, ctx.user.id)); 
+      await ctx.db
+        .update(count)
+        .set({
+          count: input.isIncreasing
+            ? existingCount.count + 1
+            : existingCount.count - 1,
+        })
+        .where(eq(count.userId, ctx.user.id));
     }),
 });
