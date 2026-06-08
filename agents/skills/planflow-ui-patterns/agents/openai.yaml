@@ -1,0 +1,7 @@
+interface:
+  display_name: "Planflow UI Patterns"
+  short_description: "Profile, forms, and toast patterns"
+  default_prompt: "Use $planflow-ui-patterns to build Planflow profile pages, forms, and notifications that match this repo."
+
+policy:
+  allow_implicit_invocation: true
