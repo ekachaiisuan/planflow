@@ -2,9 +2,15 @@
 
 ## Project Structure & Module Organization
 
-This is a Next.js 16 TypeScript app using the App Router. Route files live in `app/`, with route-local UI in `_components` folders such as `app/dashboard/_components/`. Shared UI is in `components/`, shadcn-style primitives are in `components/ui/`, hooks are in `hooks/`, utilities and auth helpers are in `lib/`, providers are in `providers/`, and static assets are in `public/`.
+See `architecture.md`. and `project.md`.
 
-Backend-adjacent code is split by concern: tRPC setup and routers live in `trpc/`, server helpers in `server/`, and Drizzle setup plus schemas in `db/`. Planning notes are in `docs/`.
+## tRPC Patterns
+
+See `trpc-patterns.md`
+
+## Authentication & Authorization
+
+See `auth.md`.
 
 ## Build, Test, and Development Commands
 
@@ -79,3 +85,29 @@ Wait for confirmation before proceeding unless the task is trivial (e.g., fixing
 - Match the exact structure, naming, and conventions already used in the project.
 - Do not introduce new libraries, utilities, or abstractions not already present in the codebase.
 - When in doubt, find the closest existing example and follow it.
+
+---
+
+# Role
+
+You are the **Implementer** for this project.
+Your job is to implement what has been discussed in this session or planned in PLANNING.md — do not redesign.
+
+## Responsibilities
+
+- Read PLANNING.md before starting any task. If the task is not covered in PLANNING.md, follow the plan discussed in this session.
+- Implement code strictly following the plan
+- Follow existing conventions in the codebase. If a task requires patterns or conventions not already present in the codebase, ask me before proceeding.
+
+## Workflow
+
+1. Read PLANNING.md → find the current task
+2. Announce the current task before starting
+3. Implement it
+4. Move the completed task to the task log in PLANNING.md
+
+## You must NOT
+
+- Change architecture or database schema without instruction
+- Skip steps in the plan
+- Make design decisions — if unclear, write a question in PLANNING.md under "Open Questions"

@@ -2,14 +2,7 @@
 
 ## Technology Stack
 
-- Next.js 16 (App Router)
-- TypeScript
-- tRPC v11
-- TanStack Query
-- Drizzle ORM
-- Better Auth
-- Neon PostgreSQL
-- shadcn/ui
+**Stack**: Next.js 16 (App Router) · TypeScript · tRPC v11 · TanStack Query · Drizzle ORM · Neon PostgreSQL · Better Auth · shadcn/ui · Tailwind CSS 4
 
 ---
 
@@ -17,19 +10,23 @@
 
 Root
 
-- `app/`: Next.js App Router pages, layouts, and route-local components.
-- `components/`: common UI, form, email, navigation, and icon components.
-- `trpc/`: tRPC client and server configuration.
-- `db/`: Database configuration and schema definitions.
-- `lib/`: Shared utilities and configurations (auth, permissions, utils).
-- `server/`: Server-only helper functions and utilities.
-- `docs/`: Project documentation and planning notes.
+- `app/` — Next.js App Router pages and route-local `_components/`
+- `trpc/server/routers/` — feature routers; register each in `_app.ts`
+- `db/schema/` — Drizzle schema files; export from `index.ts`
+- `lib/` — shared config: `auth.ts` (Better Auth server), `auth-client.ts` (client helpers), `permissions.ts` (RBAC)
+- `server/` — server-only helpers: `user.ts` (`authSession`, `authIsRequired`), `uuid.ts`
+- `providers/index.tsx` — client-side TRPCReactProvider with hydration safety
 
 ---
 
 ## Architecture Layers
 
-UI Layer->tRPC Procedures->Drizzle ORM->PostgreSQL
+```
+UI (React Server/Client Components)
+  → tRPC procedures (trpc/server/routers/)
+    → Drizzle ORM (ctx.db)
+      → Neon PostgreSQL
+```
 
 ## Rules
 

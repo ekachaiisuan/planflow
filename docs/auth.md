@@ -2,29 +2,14 @@
 
 ## Planflow uses Better Auth for authentication and session management.
 
----
+Better Auth is configured in `lib/auth.ts` (server) and `lib/auth-client.ts` (client). The API handler lives at
+`app/api/auth/[...all]/route.ts`.
 
-## Configuration
+Supported: email/password, GitHub OAuth, 2FA (TOTP + backup codes), email verification, password reset.
 
-## Server
+Roles defined in `lib/permissions.ts`: `user` · `officer` · `manager` · `admin`. Project resource permissions: `user` → read; `officer` → read/create/update; `manager`/`admin` → full CRUD + manage.
 
-- lib/auth.ts
-
-### Responsibilities:
-
-- Better Auth configuration
-- Drizzle adapter integration
-- Email verification
-- Password reset
-- Auth plugins
-
-## Client
-
-- lib/auth-client.ts
-
-### Responsibilities:
-
-- Client authentication helpers
+Authorization must always be enforced server-side (in tRPC procedures), never only in the UI.
 
 ---
 
