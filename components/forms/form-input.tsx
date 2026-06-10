@@ -40,12 +40,12 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ) => (
     <FormItem>
       {label ? (
-        <FormLabel className="font-semibold text-neutral-700 text-xs">
+        <FormLabel className="font-medium text-neutral-700 text-sm">
           {label}
         </FormLabel>
       ) : null}
       <Input
-        className={cn('h-7 px-2 py-1 text-sm', className)}
+        className={cn('h-10 px-2 py-1 text-sm', className)}
         defaultValue={defaultValue}
         disabled={disabled}
         id={id}

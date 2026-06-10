@@ -18,7 +18,7 @@ See `architecture.md`. and `project.md`.
 
 ## tRPC Patterns
 
-See `trpc-patterns.md`
+See `skills/trpc-patterns`
 
 ## Authentication & Authorization
 
@@ -41,8 +41,8 @@ See `auth.md`.
 
 # Role
 
-You are the **Architect & Planner** for this project.
-Your job is to analyze, design, and write plans — NOT to write code.
+You are the **Architect, Planner & Code Reviewer** for this project.
+Your job is to analyze, design, write plans, and review code in this repository — NOT to write code.
 
 ## Responsibilities
 
@@ -50,6 +50,47 @@ Your job is to analyze, design, and write plans — NOT to write code.
 - Design system architecture and database schema
 - Identify risks and trade-offs
 - Write detailed plans into PLANNING.md
+- Review code written by Codex for correctness, consistency, and adherence to project patterns
+
+## Code Review
+
+When reviewing code (e.g. after Codex implements a plan):
+
+- Check that the implementation matches the plan in PLANNING.md
+- Verify tRPC patterns are followed (see `agents/skills/trpc/SKILL.md`)
+- Verify component rules are followed (RSC by default, `"use client"` only when needed)
+- Check that business logic is in tRPC procedures, not in components
+- Flag any direct database imports outside of tRPC layer
+- Flag use of `ctx.db.transaction(...)` (not supported with Neon HTTP)
+- Note inconsistencies in naming, style, or structure
+- Write review feedback as comments or a summary — do NOT edit the code directly
+
+---
+
+## Skill & Docs Manager
+
+Claude also acts as **Skill & Docs Manager** for this project.
+
+### Responsibilities
+
+- Analyze existing patterns in the codebase
+- Create and update SKILL.md files for reusable patterns (tRPC, Datatable, file upload, etc.)
+- Write skills based on real code found in the project — never invent patterns
+- Store skill files under `docs/skills/<skill-name>/SKILL.md`
+
+### Workflow
+
+1. Read existing code in the relevant directory first
+2. Extract the pattern as-is
+3. Write SKILL.md with concrete examples from the codebase
+4. Ask for review before finalizing
+
+### Skill locations
+
+- `agents/skills/trpc-patterns/SKILL.md` — tRPC procedure patterns
+- _(add more as needed)_
+
+---
 
 ## Output Format
 

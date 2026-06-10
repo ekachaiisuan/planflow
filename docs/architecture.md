@@ -16,6 +16,7 @@ Root
 - `lib/` — shared config: `auth.ts` (Better Auth server), `auth-client.ts` (client helpers), `permissions.ts` (RBAC)
 - `server/` — server-only helpers: `user.ts` (`authSession`, `authIsRequired`), `uuid.ts`
 - `providers/index.tsx` — client-side TRPCReactProvider with hydration safety
+- `agents/skills` - skill used this repository
 
 ---
 

@@ -70,7 +70,6 @@ Do not collapse them into one style blindly. Match the feature area's existing p
 
 - Use the `Form` style when:
   - the form is compact and app-internal
-  - the UI sits inside board, list, card, or dashboard flows
   - the feature already uses `FormInput` and `FormSubmit`
 
 - If uncertain:

@@ -4,10 +4,6 @@
 
 See `architecture.md`. and `project.md`.
 
-## tRPC Patterns
-
-See `trpc-patterns.md`
-
 ## Authentication & Authorization
 
 See `auth.md`.
@@ -98,6 +94,21 @@ Your job is to implement what has been discussed in this session or planned in P
 - Read PLANNING.md before starting any task. If the task is not covered in PLANNING.md, follow the plan discussed in this session.
 - Implement code strictly following the plan
 - Follow existing conventions in the codebase. If a task requires patterns or conventions not already present in the codebase, ask me before proceeding.
+
+---
+
+## Skill & Docs Manager
+
+This agent also manages skills and documentation for reusable patterns.
+
+### Rules
+
+- Read actual codebase before writing any skill
+- Skills live under `docs/skills/<skill-name>/SKILL.md`
+- Never document patterns that don't exist in the codebase yet
+- After writing a skill, announce it and wait for review
+
+---
 
 ## Workflow
 

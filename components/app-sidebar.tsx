@@ -3,15 +3,14 @@
 import * as React from 'react';
 import {
   AudioWaveform,
-  BookOpen,
   Bot,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
+  type LucideIcon,
   Settings2,
-  SquareTerminal,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -48,13 +47,6 @@ const data = {
       plan: 'Free',
     },
   ],
-  navMain: [
-    {
-      title: 'Users',
-      url: '/admin',
-      icon: Bot,
-    },
-  ],
   projects: [
     {
       name: 'Design Engineering',
@@ -77,9 +69,11 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [hasAdminPermission, setHasAdminPermission] = useState(false);
   const { data: session, isPending: loading } = authClient.useSession();
+  const role = session?.user?.role;
 
   useEffect(() => {
     if (!session) return;
+
     authClient.admin
       .hasPermission({
         permission: { user: ['list'] },
@@ -89,15 +83,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       });
   }, [session]);
 
- if (loading) {
-    return <div><Spinner className="size-4" /></div>;
+  if (loading) {
+    return (
+      <div>
+        <Spinner className="size-4" />
+      </div>
+    );
   }
 
-    const user = {
-    name: session?.user?.name ?? "",
-    email: session?.user?.email ?? "",
-    avatar: session?.user?.image ?? "/avatars/default.jpg",
+  const user = {
+    name: session?.user?.name ?? '',
+    email: session?.user?.email ?? '',
+    avatar: session?.user?.image ?? '/avatars/default.jpg',
   };
+
+  const hasManagementAccess = role === 'manager' || role === 'admin';
+  const canShowAdminUsers = Boolean(session) && hasAdminPermission;
+  const navMainItems = [
+    canShowAdminUsers
+      ? {
+          title: 'Users',
+          url: '/admin',
+          icon: Bot,
+        }
+      : null,
+    hasManagementAccess
+      ? {
+          title: 'Management',
+          url: '/management',
+          icon: Settings2,
+        }
+      : null,
+  ].filter(Boolean) as {
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+  }[];
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -105,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        {hasAdminPermission && <NavMain items={data.navMain} />}
+        {navMainItems.length > 0 && <NavMain items={navMainItems} />}
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
