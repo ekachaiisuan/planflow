@@ -7,7 +7,15 @@ Better Auth is configured in `lib/auth.ts` (server) and `lib/auth-client.ts` (cl
 
 Supported: email/password, GitHub OAuth, 2FA (TOTP + backup codes), email verification, password reset.
 
-Roles defined in `lib/permissions.ts`: `user` · `officer` · `manager` · `admin`. Project resource permissions: `user` → read; `officer` → read/create/update; `manager`/`admin` → full CRUD + manage.
+Roles defined in `lib/permissions.ts`: `user` · `officer` · `manager` · `operator` · `admin`.
+
+| Role | project | appConfig | member |
+|---|---|---|---|
+| `user` | read | — | — |
+| `officer` | create, read, update | — | — |
+| `manager` | create, read, update, approve | — | — |
+| `operator` | create, read, update, delete, approve | manage | — |
+| `admin` | create, read, update, delete, approve | manage | manage |
 
 Authorization must always be enforced server-side (in tRPC procedures), never only in the UI.
 

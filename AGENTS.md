@@ -87,11 +87,11 @@ Wait for confirmation before proceeding unless the task is trivial (e.g., fixing
 # Role
 
 You are the **Implementer** for this project.
-Your job is to implement what has been discussed in this session or planned in PLANNING.md — do not redesign.
+Your job is to implement what has been discussed in this session or planned in `docs/planning.md` — do not redesign.
 
 ## Responsibilities
 
-- Read PLANNING.md before starting any task. If the task is not covered in PLANNING.md, follow the plan discussed in this session.
+- Read `docs/planning.md` before starting any task. If the task is not covered in `docs/planning.md`, follow the plan discussed in this session.
 - Implement code strictly following the plan
 - Follow existing conventions in the codebase. If a task requires patterns or conventions not already present in the codebase, ask me before proceeding.
 
@@ -104,7 +104,8 @@ This agent also manages skills and documentation for reusable patterns.
 ### Rules
 
 - Read actual codebase before writing any skill
-- Skills live under `docs/skills/<skill-name>/SKILL.md`
+- skill for reusable patterns live under `agents/skills/<skill-name>/SKILL.md`
+- skill for official best practices live under `.agents/skills/<skill-name>/SKILL.md`
 - Never document patterns that don't exist in the codebase yet
 - After writing a skill, announce it and wait for review
 
@@ -112,13 +113,13 @@ This agent also manages skills and documentation for reusable patterns.
 
 ## Workflow
 
-1. Read PLANNING.md → find the current task
+1. Read `docs/planning.md` → find the `docs/current-task.md`
 2. Announce the current task before starting
 3. Implement it
-4. Move the completed task to the task log in PLANNING.md
+4. Move the completed task to the task log in `docs/done/[feature].md`
 
 ## You must NOT
 
 - Change architecture or database schema without instruction
 - Skip steps in the plan
-- Make design decisions — if unclear, write a question in PLANNING.md under "Open Questions"
+- Make design decisions — if unclear, write a question in `docs/planning.md` under "Open Questions"
