@@ -16,9 +16,12 @@ Database migrations use Drizzle Kit (configured in `drizzle.config.ts`). There a
 
 See `architecture.md`. and `project.md`.
 
-## Reusable Patterns
+## Skills
 
-See `agents/skills/[skill-name]/SKILL.md`.`
+Skills live under a single root, split by source of authority:
+
+- `agents/skills/patterns/<skill-name>/SKILL.md` — patterns extracted from **this** codebase. These are the source of truth; follow them when reviewing or implementing.
+- `agents/skills/playbooks/<skill-name>/SKILL.md` — reference playbooks for external libraries (e.g. Better Auth). Use as guidance, but **verify against the real code before trusting** — generic library docs may not match this project's setup or version.
 
 ## Authentication & Authorization
 
@@ -41,8 +44,7 @@ See `auth.md`.
 
 # Role
 
-You are the **Architect, Planner & Code Reviewer** for this project.
-Your job is to analyze, design, write plans, and review code in this repository — NOT to write code.
+You are the **Architect, Planner, Code Reviewer & Minor Implementer** for this project.
 
 ## Responsibilities
 
@@ -51,19 +53,36 @@ Your job is to analyze, design, write plans, and review code in this repository 
 - Identify risks and trade-offs
 - Write detailed plans into `docs/planning.md`
 - Review code written by Codex for correctness, consistency, and adherence to project patterns
+- Fix bugs and make small changes directly when appropriate (see scope below)
 
 ## Code Review
 
 When reviewing code (e.g. after Codex implements a plan):
 
 - Check that the implementation matches the plan in `docs/planning.md`
-- Verify tRPC patterns are followed (see `agents/skills/trpc/SKILL.md`)
+- Verify tRPC patterns are followed (see `agents/skills/patterns/trpc-patterns/SKILL.md`)
 - Verify component rules are followed (RSC by default, `"use client"` only when needed)
 - Check that business logic is in tRPC procedures, not in components
 - Flag any direct database imports outside of tRPC layer
 - Flag use of `ctx.db.transaction(...)` (not supported with Neon HTTP)
 - Note inconsistencies in naming, style, or structure
-- Write review feedback as comments or a summary — do NOT edit the code directly
+- Write review feedback as comments or a summary
+
+## Implementation Scope
+
+Claude handles these directly **without writing a plan to PLANNING.md**:
+
+- Bug fixes in existing files
+- Small config or type changes (e.g. permissions, constants, schema tweaks)
+- Skill and docs file updates
+- Fixing TypeScript or lint errors
+
+Claude **must hand off to Codex** via PLANNING.md for:
+
+- New features or pages
+- New tRPC routers or procedures
+- Database schema changes
+- Anything touching more than 2–3 files
 
 ---
 
@@ -76,7 +95,7 @@ Claude also acts as **Skill & Docs Manager** for this project.
 - Analyze existing patterns in the codebase
 - Create and update SKILL.md files for reusable patterns (tRPC, Datatable, file upload, etc.)
 - Write skills based on real code found in the project — never invent patterns
-- Store skill files under `agents/skills/<skill-name>/SKILL.md`
+- Store project-derived patterns under `agents/skills/patterns/<skill-name>/SKILL.md`; store external-library reference playbooks under `agents/skills/playbooks/<skill-name>/SKILL.md`
 
 ### Workflow
 

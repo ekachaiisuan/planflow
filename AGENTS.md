@@ -1,3 +1,13 @@
+<!-- intent-skills:start -->
+## Skill Loading
+
+Before substantial work:
+- Skill check: run `pnpm dlx @tanstack/intent@latest list`, or use skills already listed in context.
+- Skill guidance: if one local skill clearly matches the task, run `pnpm dlx @tanstack/intent@latest load <package>#<skill>` and follow the returned `SKILL.md`.
+- Monorepos: when working across packages, run the skill check from the workspace root and prefer the local skill for the package being changed.
+- Multiple matches: prefer the most specific local skill for the package or concern you are changing; load additional skills only when the task spans multiple packages or concerns.
+<!-- intent-skills:end -->
+
 # Repository Guidelines
 
 ## Project Structure & Module Organization
@@ -37,89 +47,10 @@ Recent commit messages are short phrases such as `prepare getqueryclient` and `b
 
 Environment values are loaded from `.env`; never commit secrets. Database configuration reads `DATABASE_URL` in `drizzle.config.ts`. Treat auth, role, and permission changes in `lib/auth.ts`, `lib/permissions.ts`, and `db/schema/auth.ts` as high-risk and validate them carefully.
 
-### General Architecture Principles
-
-- Use Next.js 16 with the App Router only.
-- Prefer Server Components by default.
-- Use `"use client"` only when strictly necessary.
-- Never access the database directly from Client Components.
-- All business logic must be implemented through tRPC procedures.
-- Use Drizzle ORM for all database operations.
-- Use Better Auth for authentication and authorization.
-- Keep database access inside the server layer only.
-- Keep Client Components focused on presentation and user interactions.
-- Server-side data fetching should be performed in Server Components, Route Handlers, or tRPC procedures.
-- Maintain a clear separation between UI, business logic, and data access layers.
+Architecture rules and coding principles: see `architecture.md`.
 
 ---
 
-## Task Execution Guidelines
+## Implementer Instructions
 
-### Plan Before You Act
-
-Before writing or modifying any code, output a short plan in this format:
-
-```
-### Plan
-- Files to create: <list or "none">
-- Files to modify: <list or "none">
-- Approach: <brief description>
-```
-
-Wait for confirmation before proceeding unless the task is trivial (e.g., fixing a typo).
-
-### Stay Within Scope
-
-- Only create or modify files that are directly required by the current task.
-- Do not refactor, reformat, or clean up files that are not part of the task.
-- Do not add comments, rename variables, or adjust formatting in unrelated sections.
-- If a change outside the task scope seems necessary, flag it and ask before touching it.
-
-### Follow Existing Patterns
-
-- Before writing new code, read the existing files in the relevant directory first.
-- Match the exact structure, naming, and conventions already used in the project.
-- Do not introduce new libraries, utilities, or abstractions not already present in the codebase.
-- When in doubt, find the closest existing example and follow it.
-
----
-
-# Role
-
-You are the **Implementer** for this project.
-Your job is to implement what has been discussed in this session or planned in `docs/planning.md` — do not redesign.
-
-## Responsibilities
-
-- Read `docs/planning.md` before starting any task. If the task is not covered in `docs/planning.md`, follow the plan discussed in this session.
-- Implement code strictly following the plan
-- Follow existing conventions in the codebase. If a task requires patterns or conventions not already present in the codebase, ask me before proceeding.
-
----
-
-## Skill & Docs Manager
-
-This agent also manages skills and documentation for reusable patterns.
-
-### Rules
-
-- Read actual codebase before writing any skill
-- skill for reusable patterns live under `agents/skills/<skill-name>/SKILL.md`
-- skill for official best practices live under `.agents/skills/<skill-name>/SKILL.md`
-- Never document patterns that don't exist in the codebase yet
-- After writing a skill, announce it and wait for review
-
----
-
-## Workflow
-
-1. Read `docs/planning.md` → find the `docs/current-task.md`
-2. Announce the current task before starting
-3. Implement it
-4. Move the completed task to the task log in `docs/done/[feature].md`
-
-## You must NOT
-
-- Change architecture or database schema without instruction
-- Skip steps in the plan
-- Make design decisions — if unclear, write a question in `docs/planning.md` under "Open Questions"
+Role, task-execution rules, skill-management rules, workflow, and constraints: see `docs/implementer-guide.md`.
