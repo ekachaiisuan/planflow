@@ -20,50 +20,88 @@ Do **not** import the database directly into Client Components.
 
 ## 1. Router Pattern
 
-Base your routers on `trpc/server/routers/count.ts`.
+Base your routers on `trpc/server/routers/user-profile.ts` (the canonical
+reference for this project). It shows protected reads, lookup/option lists, and a
+single-statement upsert with foreign-key error mapping.
 
 ```ts
-import { eq } from 'drizzle-orm';
+import { department, prefix, position, userProfile } from '@/db/schema';
+import { createTRPCRouter, protectedProcedure } from '@/trpc/server/init';
 import { TRPCError } from '@trpc/server';
+import { asc, eq } from 'drizzle-orm';
 import z from 'zod';
 
-import { count } from '@/db/schema';
-import { uuid } from '@/server/uuid';
-import { baseProcedure, createTRPCRouter, protectedProcedure } from '../init';
+const profileSchema = z.object({
+  prefixId: z.string().min(1, { message: 'Prefix is required' }),
+  firstName: z.string().trim().min(1, { message: 'First name is required' }),
+  lastName: z.string().trim().min(1, { message: 'Last name is required' }),
+  positionId: z.string().min(1, { message: 'Position is required' }),
+  departmentId: z.string().min(1, { message: 'Department is required' }),
+});
 
-export const countRouter = createTRPCRouter({
-  createCount: protectedProcedure.mutation(async ({ ctx }) => {
-    const existingCount = await ctx.db.query.count.findFirst({
-      where: eq(count.userId, ctx.user.id),
+export const userProfileRouter = createTRPCRouter({
+  // Read the current user's own row — scope by ctx.user.id, never by input.
+  get: protectedProcedure.query(async ({ ctx }) => {
+    const profile = await ctx.db.query.userProfile.findFirst({
+      where: eq(userProfile.userId, ctx.user.id),
+      columns: {
+        prefixId: true,
+        firstName: true,
+        lastName: true,
+        positionId: true,
+        departmentId: true,
+      },
     });
 
-    if (existingCount) {
-      throw new TRPCError({
-        code: 'CONFLICT',
-        message: 'Count already exists for this user',
-      });
-    }
-
-    await ctx.db.insert(count).values({
-      id: uuid(),
-      count: 1,
-      userId: ctx.user.id,
-    });
+    return profile ?? null;
   }),
 
-  getCount: baseProcedure
-    .input(z.object({ countId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const existingCount = await ctx.db.query.count.findFirst({
-        where: eq(count.id, input.countId),
-      });
+  // Option list for a <Select> — select only the columns the client needs.
+  departmentOptions: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select({ id: department.id, name: department.name })
+      .from(department)
+      .orderBy(asc(department.name));
+  }),
 
-      return (
-        existingCount ?? { count: undefined, id: undefined, userId: undefined }
-      );
+  // Create-or-update in ONE statement (see §2 — Neon HTTP has no transactions).
+  save: protectedProcedure
+    .input(profileSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const [saved] = await ctx.db
+          .insert(userProfile)
+          .values({ userId: ctx.user.id, ...input })
+          .onConflictDoUpdate({
+            target: userProfile.userId,
+            set: { ...input },
+          })
+          .returning();
+
+        return saved;
+      } catch (error) {
+        // Map known Postgres errors to clear TRPCErrors.
+        const cause = (error as { cause?: { code?: string } })?.cause;
+
+        if (cause?.code === '23503') {
+          // foreign_key_violation — a referenced row no longer exists
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Selected position or department no longer exists',
+          });
+        }
+
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to save profile',
+        });
+      }
     }),
 });
 ```
+
+> Use `prefixOptions` / `positionOptions` in the same file for more option-list
+> examples, and `db/schema/user-profile.ts` for the matching table + relations.
 
 ### Router Rules
 
@@ -72,13 +110,23 @@ export const countRouter = createTRPCRouter({
 - Register each router in `trpc/server/routers/_app.ts`.
 - Use `baseProcedure` for public procedures only.
 - Use `protectedProcedure` for authenticated mutations and user-specific reads.
-- Read the current user from `ctx.user` inside `protectedProcedure`.
+- Read the current user from `ctx.user` inside `protectedProcedure`. **Scope
+  user-owned reads/writes by `ctx.user.id`, never trust an id from input.**
 - Access Drizzle only through `ctx.db`.
-- Validate all external input with `.input(z.object(...))`.
+- Validate all external input with `.input(z.object(...))` — share the schema with
+  the client form when possible (the form uses the same shape).
 - Use `.query(...)` for reads and `.mutation(...)` for writes.
-- Throw `TRPCError` for expected business errors (`UNAUTHORIZED`, `NOT_FOUND`, `CONFLICT`).
-- Generate IDs with `uuid()` when inserting rows.
-- Check record existence before updating or deleting when the user should get a clear error.
+- Throw `TRPCError` for expected business errors (`UNAUTHORIZED`, `NOT_FOUND`,
+  `BAD_REQUEST`, `CONFLICT`).
+- Map known Postgres error codes from `error.cause.code` to meaningful errors
+  (`23505` unique_violation → `CONFLICT`, `23503` foreign_key_violation →
+  `BAD_REQUEST`).
+- Generate IDs with `uuid()` when inserting rows that need a generated primary key.
+  (`userProfile` keys on `userId`, so it doesn't.)
+- For create-or-update, prefer a single `insert().onConflictDoUpdate()` (upsert)
+  over read-then-write — it stays one statement (see §2).
+- Return `null` from a single-row read when nothing is found, so the client can
+  branch on "has data yet?".
 - Keep business logic in the tRPC procedure layer, not in UI components.
 
 ---
@@ -101,10 +149,13 @@ This project uses `drizzle-orm/neon-http`. The Neon HTTP driver **does not suppo
 
 Use `await Promise.all(...)` — never `void` — to force parallel prefetching before render.
 
+See `app/profile/page.tsx` for a live example.
+
 ```ts
 const queryClient = getQueryClient();
 await Promise.all([
-  queryClient.prefetchQuery(trpc.project.list.queryOptions()),
+  queryClient.prefetchQuery(trpc.userProfile.get.queryOptions()),
+  queryClient.prefetchQuery(trpc.userProfile.departmentOptions.queryOptions()),
 ]);
 ```
 
@@ -124,8 +175,11 @@ await Promise.all([
 
 ### Client Hydration
 
+See `app/profile/_components/profile-content-form.tsx` for a live example.
+
 ```ts
-const { data } = useSuspenseQuery(trpc.project.list.queryOptions());
+const trpc = useTRPC();
+const { data: profile } = useSuspenseQuery(trpc.userProfile.get.queryOptions());
 ```
 
 ### Query Rules
@@ -139,12 +193,21 @@ const { data } = useSuspenseQuery(trpc.project.list.queryOptions());
 
 ## 4. Mutation Pattern
 
-After a successful mutation, invalidate related queries using tRPC-generated query keys.
+After a successful mutation, invalidate related queries using tRPC-generated query
+keys. See `app/profile/_components/profile-content-form.tsx` for a live example.
 
 ```ts
-queryClient.invalidateQueries({
-  queryKey: trpc.project.list.queryKey(),
-});
+const save = useMutation(
+  trpc.userProfile.save.mutationOptions({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: trpc.userProfile.get.queryKey(),
+      });
+      toast.success('Profile saved');
+    },
+    onError: (error) => toast.error(error.message),
+  }),
+);
 ```
 
 ### Mutation Rules

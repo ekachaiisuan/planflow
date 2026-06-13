@@ -5,10 +5,8 @@ import {
   AudioWaveform,
   Bot,
   Command,
-  Frame,
+  CircuitBoard,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
   type LucideIcon,
   Settings2,
 } from 'lucide-react';
@@ -49,19 +47,9 @@ const data = {
   ],
   projects: [
     {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
+      name: 'Dashboard',
+      url: '/dashboard',
+      icon: CircuitBoard,
     },
   ],
 };
