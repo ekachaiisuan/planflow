@@ -25,6 +25,7 @@ import {
 import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Spinner } from './ui/spinner';
+import { NavOnboarding } from '@/components/nav-onboarding';
 
 // This is sample data.
 const data = {
@@ -115,6 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {navMainItems.length > 0 && <NavMain items={navMainItems} />}
+        <NavOnboarding />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>

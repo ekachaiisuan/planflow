@@ -19,11 +19,19 @@ import PageContent from './_components/page-content';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { redirect } from 'next/navigation';
 
 export default async function Page() {
   const session = await authIsRequired();
 
   const queryClient = getQueryClient();
+  const profile = await queryClient.fetchQuery(
+    trpc.userProfile.get.queryOptions(),
+  );
+  if (session.user.emailVerified && profile == null) {
+    redirect('/profile');
+  }
+
   void queryClient.prefetchQuery(
     trpc.count.getCount.queryOptions({
       countId: '8d0fb1b1-0e4b-47ab-b841-52951f7b5c8f',

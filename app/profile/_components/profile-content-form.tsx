@@ -127,57 +127,63 @@ export default function ProfileContentForm() {
             className="max-w-md space-y-4"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <div className="grid gap-4 sm:grid-cols-3">
-              <FormField
-                control={form.control}
-                name="prefixId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-medium text-neutral-700 text-sm">
-                      Prefix
-                    </FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="prefixId" className="w-full">
-                        <SelectValue placeholder="Select prefix" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {prefixes.map((item) => (
-                          <SelectItem key={item.id} value={item.id}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormErrors id="prefixId" errors={formattedErrors} />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormInput
-                    {...field}
-                    id="firstName"
-                    label="Name"
-                    placeholder="Enter name"
-                    errors={formattedErrors}
-                  />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormInput
-                    {...field}
-                    id="lastName"
-                    label="Last name"
-                    placeholder="Enter last name"
-                    errors={formattedErrors}
-                  />
-                )}
-              />
+            <div className="grid gap-4 sm:grid-cols-8">
+              <div className="sm:col-span-2 min-w-0">
+                <FormField
+                  control={form.control}
+                  name="prefixId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-medium text-neutral-700 text-sm">
+                        Prefix
+                      </FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger id="prefixId" className="w-full">
+                          <SelectValue placeholder="Prefix" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {prefixes.map((item) => (
+                            <SelectItem key={item.id} value={item.id}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormErrors id="prefixId" errors={formattedErrors} />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="sm:col-span-3 min-w-0">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormInput
+                      {...field}
+                      id="firstName"
+                      label="Name"
+                      placeholder="Enter name"
+                      errors={formattedErrors}
+                    />
+                  )}
+                />
+              </div>
+              <div className="sm:col-span-3 min-w-0">
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormInput
+                      {...field}
+                      id="lastName"
+                      label="Last name"
+                      placeholder="Enter last name"
+                      errors={formattedErrors}
+                    />
+                  )}
+                />
+              </div>
             </div>
 
             <FormField
