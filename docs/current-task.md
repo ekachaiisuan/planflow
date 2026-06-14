@@ -1,15 +1,10 @@
 # Current Task
 
-## Summary of the previous plan
-
-- Built the user-profile form + `userProfileRouter` (`get` / option lists / `save` upsert), wired into `/profile` with prefetch + HydrationBoundary.
-- Removed the `delete` capability from both the form and the router (users may only create/edit their own profile).
-- Deleted dead `app/management/_components/create-dep-form.tsx`.
-- Updated `agents/skills/patterns/trpc-patterns/SKILL.md` to base on `user-profile.ts`; added `agents/skills/playbooks/trpc-tanstack/SKILL.md`.
+none task
 
 ---
 
-## Completed task: **P5 — Onboarding (auto-redirect + sidebar card).**
+## Summary of the previous plan
 
 We have successfully implemented the onboarding guard and sidebar prompt card to require users to fill in their profile details before they can use the application:
 

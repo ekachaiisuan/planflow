@@ -87,6 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   const hasManagementAccess = role === 'manager' || role === 'admin';
+  const hasProjectsAccess = role !== undefined && role !== 'user';
   const canShowAdminUsers = Boolean(session) && hasAdminPermission;
   const navMainItems = [
     canShowAdminUsers
@@ -116,10 +117,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {navMainItems.length > 0 && <NavMain items={navMainItems} />}
-        <NavOnboarding />
-        <NavProjects projects={data.projects} />
+        {hasProjectsAccess && <NavProjects projects={data.projects} />}
       </SidebarContent>
       <SidebarFooter>
+        <NavOnboarding />
         <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
